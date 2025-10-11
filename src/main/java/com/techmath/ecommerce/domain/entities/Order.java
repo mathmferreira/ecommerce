@@ -1,6 +1,7 @@
 package com.techmath.ecommerce.domain.entities;
 
 import com.techmath.ecommerce.domain.enums.OrderStatus;
+import com.techmath.ecommerce.domain.exceptions.InvalidOrderStateException;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -95,7 +96,7 @@ public class Order implements Serializable {
 
     private void checkPendingStatus() {
         if (status != OrderStatus.PENDING) {
-            throw new IllegalStateException("Orders can only be modified in pending status.");
+            throw new InvalidOrderStateException();
         }
     }
 
