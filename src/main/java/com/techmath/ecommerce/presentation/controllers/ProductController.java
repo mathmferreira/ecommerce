@@ -1,4 +1,4 @@
-package com.techmath.ecommerce.application.controllers;
+package com.techmath.ecommerce.presentation.controllers;
 
 import com.techmath.ecommerce.application.converters.ProductConverter;
 import com.techmath.ecommerce.application.dtos.ProductDTO;
