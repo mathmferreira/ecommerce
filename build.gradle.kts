@@ -5,7 +5,7 @@ plugins {
 }
 
 group = "com.techmath"
-version = "0.0.1-SNAPSHOT"
+version = "1.0.0"
 description = "ecommerce"
 
 java {
@@ -24,6 +24,9 @@ repositories {
     mavenCentral()
 }
 
+val jwtVersion = "0.12.6"
+val commonsLangVersion = "3.19.0"
+
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter-data-elasticsearch")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
@@ -40,6 +43,11 @@ dependencies {
     compileOnly("org.projectlombok:lombok")
     annotationProcessor("org.projectlombok:lombok")
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
+
+    implementation("org.apache.commons:commons-lang3:${commonsLangVersion}")
+    implementation("io.jsonwebtoken:jjwt-api:${jwtVersion}")
+    runtimeOnly("io.jsonwebtoken:jjwt-impl:${jwtVersion}")
+    runtimeOnly("io.jsonwebtoken:jjwt-jackson:${jwtVersion}")
 
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.springframework.kafka:spring-kafka-test")

@@ -1,3 +1,33 @@
 spring:
   application:
     name: ecommerce
+
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: update
+
+  kafka:
+    bootstrap-servers: localhost:9092
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      properties:
+        spring.json.add.type.headers: false
+    consumer:
+      group-id: ecommerce-group
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: "*"
+        spring.json.value.default.type: com.seudominio.ecommerce.domain.events.OrderPaidEvent
+      auto-offset-reset: earliest
+      enable-auto-commit: false
+
+kafka:
+  topics:
+    order-paid: order.paid
+
+jwt:
+  secret: ${JWT_SECRET:404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970}
+  expiration: ${JWT_EXPIRATION:86400000}

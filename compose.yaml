@@ -8,12 +8,13 @@ services:
     ports:
       - '9200'
       - '9300'
+
   mysql:
     image: 'mysql:latest'
     environment:
-      - 'MYSQL_DATABASE=mydatabase'
+      - 'MYSQL_DATABASE=ecommerce'
       - 'MYSQL_PASSWORD=secret'
-      - 'MYSQL_ROOT_PASSWORD=verysecret'
-      - 'MYSQL_USER=myuser'
+      - 'MYSQL_ROOT_PASSWORD=root'
+      - 'MYSQL_USER=ecommerce'
     ports:
       - '3306'
