@@ -1,12 +1,11 @@
 package com.techmath.ecommerce.presentation.controllers;
 
 import com.techmath.ecommerce.application.converters.ProductConverter;
-import com.techmath.ecommerce.application.dtos.ProductDTO;
 import com.techmath.ecommerce.application.services.ProductService;
 import com.techmath.ecommerce.domain.entities.Product;
+import com.techmath.ecommerce.presentation.dto.ProductDTO;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -29,7 +28,7 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/v1/products")
-@RequiredArgsConstructor(onConstructor_ = { @Autowired })
+@RequiredArgsConstructor
 public class ProductController {
 
     private final ProductService service;

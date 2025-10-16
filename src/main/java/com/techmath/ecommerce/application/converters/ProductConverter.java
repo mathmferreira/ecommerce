@@ -1,6 +1,6 @@
 package com.techmath.ecommerce.application.converters;
 
-import com.techmath.ecommerce.application.dtos.ProductDTO;
+import com.techmath.ecommerce.presentation.dto.ProductDTO;
 import com.techmath.ecommerce.domain.entities.Product;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;

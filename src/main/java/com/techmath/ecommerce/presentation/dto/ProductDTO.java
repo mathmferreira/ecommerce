@@ -1,4 +1,4 @@
-package com.techmath.ecommerce.application.dtos;
+package com.techmath.ecommerce.presentation.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotBlank;
