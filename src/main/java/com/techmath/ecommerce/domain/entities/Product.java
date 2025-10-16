@@ -62,9 +62,6 @@ public class Product implements Serializable {
     private LocalDateTime updatedAt;
 
     public void decreaseStock(Integer quantity) {
-        if (stockQuantity < quantity) {
-            throw new InsufficientStockException(stockQuantity);
-        }
         this.stockQuantity -= quantity;
     }
 
@@ -74,6 +71,10 @@ public class Product implements Serializable {
 
     public boolean hasStock() {
         return stockQuantity > 0;
+    }
+
+    public boolean hasStock(int quantity) {
+        return hasStock() && stockQuantity >= quantity;
     }
 
 }

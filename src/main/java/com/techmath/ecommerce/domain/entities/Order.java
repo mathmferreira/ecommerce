@@ -8,6 +8,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -32,6 +33,7 @@ public class Order implements Serializable {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
+    @CreatedBy
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
@@ -67,13 +69,11 @@ public class Order implements Serializable {
 
         items.add(orderItem);
         calculateTotal();
-        product.decreaseStock(quantity);
     }
 
     public void removeItem(OrderItem item) {
         checkPendingStatus();
         items.remove(item);
-        item.getProduct().increaseStock(item.getQuantity());
         calculateTotal();
     }
 
@@ -83,9 +83,15 @@ public class Order implements Serializable {
     }
 
     public void cancel() {
-        checkPendingStatus();
-        items.forEach(item -> item.getProduct().increaseStock(item.getQuantity()));
         this.status = OrderStatus.CANCELLED;
+    }
+
+    public boolean isPending() {
+        return this.status == OrderStatus.PENDING;
+    }
+
+    public boolean isCancelled() {
+        return this.status == OrderStatus.CANCELLED;
     }
 
     private void calculateTotal() {
