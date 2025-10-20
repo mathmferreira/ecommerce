@@ -2,7 +2,8 @@ package com.techmath.ecommerce.presentation.controllers;
 
 import com.techmath.ecommerce.application.converters.ProductConverter;
 import com.techmath.ecommerce.application.services.ProductService;
-import com.techmath.ecommerce.domain.entities.Product;
+import com.techmath.ecommerce.infrastructure.search.documents.ProductDocument;
+import com.techmath.ecommerce.infrastructure.search.services.ProductSearchService;
 import com.techmath.ecommerce.presentation.dto.ProductDTO;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -13,16 +14,9 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
 
@@ -33,6 +27,7 @@ public class ProductController {
 
     private final ProductService service;
     private final ProductConverter converter;
+    private final ProductSearchService searchService;
 
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
@@ -44,10 +39,26 @@ public class ProductController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ProductDTO>> getAllProducts(ProductDTO filters, @PageableDefault(sort = "name") Pageable pageable) {
-        var entityFilters = converter.toEntity(filters);
-        var page = service.getAllProducts(entityFilters, pageable);
-        var content = page.map(converter::toDTO).getContent();
+    public ResponseEntity<List<ProductDTO>> getAllProducts(
+            @RequestParam(required = false) String name,
+            @RequestParam(required = false) String category,
+            @RequestParam(required = false) BigDecimal minPrice,
+            @RequestParam(required = false) BigDecimal maxPrice,
+            @PageableDefault(sort = "name") Pageable pageable
+    ) {
+        var page = searchService.searchProducts(name, category, minPrice, maxPrice, pageable);
+        var content = page.map(doc -> new ProductDTO(
+                UUID.fromString(doc.getId()),
+                doc.getName(),
+                doc.getDescription(),
+                doc.getPrice(),
+                doc.getCategory(),
+                doc.getStockQuantity(),
+                doc.getCreatedAt(),
+                doc.getUpdatedAt()
+            )
+        ).getContent();
+
         var headers = mountPageableHttpHeaders(pageable, page);
         var status = page.getTotalElements() == 0 ? HttpStatus.OK : HttpStatus.PARTIAL_CONTENT;
         return new ResponseEntity<>(content, headers, status);
@@ -74,7 +85,7 @@ public class ProductController {
         service.deleteProduct(id);
     }
 
-    private HttpHeaders mountPageableHttpHeaders(Pageable pageable, Page<Product> result) {
+    private HttpHeaders mountPageableHttpHeaders(Pageable pageable, Page<ProductDocument> result) {
         HttpHeaders headers = new HttpHeaders();
         headers.add("X-Current-Page", String.valueOf(pageable.getPageNumber()));
         headers.add("X-Current-Elements", String.valueOf(result.getNumberOfElements()));

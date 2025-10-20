@@ -4,7 +4,7 @@ import com.techmath.ecommerce.domain.entities.Order;
 import com.techmath.ecommerce.domain.entities.Product;
 import com.techmath.ecommerce.domain.exceptions.InsufficientStockException;
 import com.techmath.ecommerce.domain.repositories.ProductRepository;
-import com.techmath.ecommerce.infrastructure.search.services.ProductSearchSyncService;
+import com.techmath.ecommerce.infrastructure.search.services.ProductSearchService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
 public class ProductService {
 
     private final ProductRepository repository;
-    private final ProductSearchSyncService searchSyncService;
+    private final ProductSearchService searchSyncService;
 
     @Transactional
     public Product createProduct(Product product) {
