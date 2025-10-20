@@ -2,17 +2,15 @@ package com.techmath.ecommerce.presentation.controllers;
 
 import com.techmath.ecommerce.application.converters.OrderConverter;
 import com.techmath.ecommerce.application.services.OrderService;
+import com.techmath.ecommerce.application.usecases.PayOrderUseCase;
 import com.techmath.ecommerce.presentation.dto.request.OrderItemsRequest;
 import com.techmath.ecommerce.presentation.dto.response.OrderResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/v1/orders")
@@ -21,6 +19,7 @@ public class OrderController {
 
     private final OrderService service;
     private final OrderConverter converter;
+    private final PayOrderUseCase payOrderUseCase;
 
     @PostMapping
     public OrderResponse createOrder(@RequestBody @Valid List<OrderItemsRequest> items) {
@@ -29,8 +28,8 @@ public class OrderController {
     }
 
     @PostMapping("/pay/{orderId}")
-    public void payOrder(@PathVariable Long orderId) {
-
+    public OrderResponse  payOrder(@PathVariable UUID orderId) {
+        return payOrderUseCase.execute(orderId);
     }
 
 }
