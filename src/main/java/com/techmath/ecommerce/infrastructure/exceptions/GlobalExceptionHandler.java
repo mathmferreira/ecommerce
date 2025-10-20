@@ -13,6 +13,7 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -45,7 +46,7 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
     }
 
-    @ExceptionHandler({ MethodArgumentNotValidException.class, HandlerMethodValidationException.class })
+    @ExceptionHandler({ MethodArgumentNotValidException.class, HandlerMethodValidationException.class, MissingServletRequestParameterException.class })
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResponseEntity<ErrorResponse> handleValidationErrors(
             MethodArgumentNotValidException ex,
@@ -61,7 +62,7 @@ public class GlobalExceptionHandler {
                         .message(error.getDefaultMessage())
                         .rejectedValue(error.getRejectedValue())
                         .build())
-                .collect(Collectors.toList());
+                .toList();
 
         ErrorResponse error = ErrorResponse.builder()
                 .timestamp(LocalDateTime.now())
