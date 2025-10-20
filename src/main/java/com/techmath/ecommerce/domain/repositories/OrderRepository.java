@@ -23,7 +23,7 @@ public interface OrderRepository extends JpaRepository<Order, UUID> {
     Optional<Order> findByIdWithItems(UUID id);
 
     @Query("SELECT new com.techmath.ecommerce.presentation.dto.response.ReportResponse$TopUserReport(" +
-            "u.id, u.name, u.email, COUNT(o), SUM(o.totalAmount)) " +
+            "u.id, u.name, u.email, COUNT(o), CAST(SUM(o.totalAmount) AS java.math.BigDecimal)) " +
             "FROM Order o " +
             "INNER JOIN o.user u " +
             "WHERE o.status = 'PAID' " +
@@ -36,7 +36,7 @@ public interface OrderRepository extends JpaRepository<Order, UUID> {
     );
 
     @Query("SELECT new com.techmath.ecommerce.presentation.dto.response.ReportResponse$AverageTicketReport(" +
-            "u.id, u.name, u.email, COUNT(o), AVG(o.totalAmount)) " +
+            "u.id, u.name, u.email, COUNT(o), CAST(AVG(o.totalAmount) AS java.math.BigDecimal)) " +
             "FROM Order o " +
             "INNER JOIN o.user u " +
             "WHERE o.status = 'PAID' " +

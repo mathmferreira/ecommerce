@@ -26,6 +26,7 @@ repositories {
 
 val jwtVersion = "0.12.6"
 val commonsLangVersion = "3.19.0"
+val testContainersVersion = "1.19.3"
 
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter-data-elasticsearch")
@@ -55,6 +56,12 @@ dependencies {
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.springframework.kafka:spring-kafka-test")
     testImplementation("org.springframework.security:spring-security-test")
+    testImplementation("com.h2database:h2")
+    testImplementation("org.testcontainers:testcontainers:${testContainersVersion}")
+    testImplementation("org.testcontainers:junit-jupiter:${testContainersVersion}")
+    testImplementation("org.testcontainers:mysql:${testContainersVersion}")
+    testImplementation("org.testcontainers:elasticsearch:${testContainersVersion}")
+    testImplementation("org.testcontainers:kafka:${testContainersVersion}")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 
