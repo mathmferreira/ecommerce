@@ -1,5 +1,6 @@
 package com.techmath.ecommerce.infrastructure.search.documents;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -35,10 +36,12 @@ public class ProductDocument {
     @Field(type = FieldType.Integer)
     private Integer stockQuantity;
 
-    @Field(type = FieldType.Date)
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
+    @Field(type = FieldType.Date, format = {}, pattern = "uuuu-MM-dd'T'HH:mm:ss")
     private LocalDateTime createdAt;
 
-    @Field(type = FieldType.Date)
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
+    @Field(type = FieldType.Date, format = {}, pattern = "uuuu-MM-dd'T'HH:mm:ss")
     private LocalDateTime updatedAt;
 
 }
