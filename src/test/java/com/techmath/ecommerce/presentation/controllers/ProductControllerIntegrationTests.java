@@ -6,6 +6,9 @@ import com.techmath.ecommerce.domain.entities.User;
 import com.techmath.ecommerce.domain.enums.UserRole;
 import com.techmath.ecommerce.domain.repositories.ProductRepository;
 import com.techmath.ecommerce.domain.repositories.UserRepository;
+import com.techmath.ecommerce.infrastructure.search.documents.ProductDocument;
+import com.techmath.ecommerce.infrastructure.search.repositories.ProductSearchRepository;
+import com.techmath.ecommerce.infrastructure.search.services.ProductSearchService;
 import com.techmath.ecommerce.infrastructure.security.JwtService;
 import com.techmath.ecommerce.presentation.dto.ProductDTO;
 import org.junit.jupiter.api.BeforeEach;
@@ -14,17 +17,25 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
 import org.springframework.http.MediaType;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.hamcrest.Matchers.hasSize;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -53,6 +64,15 @@ class ProductControllerIntegrationTests {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+
+    @MockitoBean
+    private ProductSearchService productSearchService;
+
+    @MockitoBean
+    private ProductSearchRepository productSearchRepository;
+
+    @MockitoBean
+    private ElasticsearchOperations elasticsearchOperations;
 
     private String adminToken;
     private String userToken;
@@ -91,6 +111,8 @@ class ProductControllerIntegrationTests {
                 .stockQuantity(10)
                 .build();
         testProduct = productRepository.save(testProduct);
+
+        setupElasticsearchMock();
     }
 
     @Test
@@ -119,7 +141,7 @@ class ProductControllerIntegrationTests {
     void shouldGetAllProducts() throws Exception {
         mockMvc.perform(get("/api/v1/products")
                         .header("Authorization", "Bearer " + userToken))
-                .andExpect(status().isOk())
+                .andExpect(status().is(206))
                 .andExpect(jsonPath("$", hasSize(greaterThanOrEqualTo(1))))
                 .andExpect(jsonPath("$[0].name").value("Test Product"));
     }
@@ -236,6 +258,23 @@ class ProductControllerIntegrationTests {
     void shouldReturn401WhenNoTokenProvided() throws Exception {
         mockMvc.perform(get("/api/v1/products"))
                 .andExpect(status().isUnauthorized());
+    }
+
+    private void setupElasticsearchMock() {
+        var productDoc = new ProductDocument(
+                testProduct.getId().toString(),
+                testProduct.getName(),
+                testProduct.getDescription(),
+                testProduct.getPrice(),
+                testProduct.getCategory(),
+                testProduct.getStockQuantity(),
+                LocalDateTime.now(),
+                LocalDateTime.now()
+        );
+
+        when(productSearchService.searchProducts(
+                any(), any(), any(), any(), any(Pageable.class)
+        )).thenReturn(new PageImpl<>(List.of(productDoc)));
     }
 
 }

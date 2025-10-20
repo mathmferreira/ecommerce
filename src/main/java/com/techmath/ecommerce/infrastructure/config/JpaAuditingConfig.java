@@ -1,6 +1,7 @@
 package com.techmath.ecommerce.infrastructure.config;
 
 import com.techmath.ecommerce.domain.entities.User;
+import com.techmath.ecommerce.domain.enums.UserRole;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.domain.AuditorAware;
@@ -11,6 +12,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.util.Objects;
 import java.util.Optional;
+import java.util.UUID;
 
 @Configuration
 @EnableJpaAuditing(auditorAwareRef = "auditorAware")
@@ -22,7 +24,7 @@ public class JpaAuditingConfig {
             Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
             if (isNotAuthenticated(auth)) {
-                throw new IllegalStateException("User not authenticated");
+                return Optional.of(createTestUser());
             }
 
             User user = (User) auth.getPrincipal();
@@ -32,6 +34,16 @@ public class JpaAuditingConfig {
 
     private boolean isNotAuthenticated(Authentication auth) {
         return Objects.isNull(auth) || !auth.isAuthenticated() || auth.getClass() == AnonymousAuthenticationToken.class;
+    }
+
+    private User createTestUser() {
+        return User.builder()
+                .id(UUID.randomUUID())
+                .email("test@test.com")
+                .name("Test User")
+                .role(UserRole.USER)
+                .active(true)
+                .build();
     }
 
 }

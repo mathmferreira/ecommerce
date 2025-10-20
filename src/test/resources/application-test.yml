@@ -17,6 +17,10 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.H2Dialect
 
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.autoconfigure.kafka.KafkaAutoConfiguration
+
   kafka:
     bootstrap-servers: localhost:9092
     producer:
