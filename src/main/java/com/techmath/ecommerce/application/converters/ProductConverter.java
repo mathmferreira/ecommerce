@@ -1,7 +1,7 @@
 package com.techmath.ecommerce.application.converters;
 
-import com.techmath.ecommerce.presentation.dto.ProductDTO;
 import com.techmath.ecommerce.domain.entities.Product;
+import com.techmath.ecommerce.presentation.dto.ProductDTO;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
 
@@ -12,7 +12,7 @@ public class ProductConverter implements Converter<Product, ProductDTO> {
     public Product toEntity(ProductDTO dto) {
         var entity = new Product();
         BeanUtils.copyProperties(dto, entity);
-        return null;
+        return entity;
     }
 
     @Override
