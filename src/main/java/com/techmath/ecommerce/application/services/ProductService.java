@@ -62,6 +62,7 @@ public class ProductService {
     public void deleteProduct(UUID id) {
         var product = getProductById(id);
         repository.delete(product);
+        searchSyncService.syncDeleteProduct(product);
     }
 
     public void handleInsufficientStock(Order order) {

@@ -8,7 +8,9 @@ import com.techmath.ecommerce.presentation.dto.ProductDTO;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -46,7 +48,8 @@ public class ProductController {
             @RequestParam(required = false) BigDecimal maxPrice,
             @PageableDefault(sort = "name") Pageable pageable
     ) {
-        var page = searchService.searchProducts(name, category, minPrice, maxPrice, pageable);
+        var modifiedPageable = createModifiedPageable(pageable);
+        var page = searchService.searchProducts(name, category, minPrice, maxPrice, modifiedPageable);
         var content = page.map(doc -> new ProductDTO(
                 UUID.fromString(doc.getId()),
                 doc.getName(),
@@ -85,8 +88,20 @@ public class ProductController {
         service.deleteProduct(id);
     }
 
+    private Pageable createModifiedPageable(Pageable pageable) {
+        if (pageable.getSort().isSorted()) {
+            var modifiedSort = Sort.unsorted();
+            for (Sort.Order order : pageable.getSort()) {
+                var property = order.getProperty().equals("name") ? "name.keyword" : order.getProperty();
+                modifiedSort = modifiedSort.and(Sort.by(order.getDirection(), property));
+            }
+            return PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), modifiedSort);
+        }
+        return pageable;
+    }
+
     private HttpHeaders mountPageableHttpHeaders(Pageable pageable, Page<ProductDocument> result) {
-        HttpHeaders headers = new HttpHeaders();
+        var headers = new HttpHeaders();
         headers.add("X-Current-Page", String.valueOf(pageable.getPageNumber()));
         headers.add("X-Current-Elements", String.valueOf(result.getNumberOfElements()));
         headers.add("X-Total-Count", String.valueOf(result.getTotalElements()));

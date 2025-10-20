@@ -34,6 +34,13 @@ kafka:
   topics:
     order-paid: order.paid
 
+logging:
+  level:
+    # 1. Configuração padrão para o cliente ES
+    org.springframework.data.elasticsearch.client.elc: DEBUG
+    # 2. Configuração padrão do Spring Data (apenas como precaução)
+    org.springframework.data.elasticsearch: DEBUG
+
 jwt:
   secret: ${JWT_SECRET:404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970}
   expiration: ${JWT_EXPIRATION:86400000}

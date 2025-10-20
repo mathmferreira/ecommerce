@@ -15,6 +15,6 @@ public interface ProductSearchRepository extends ElasticsearchRepository<Product
 
     Page<ProductDocument> findByCategory(String category, Pageable pageable);
 
-    Page<ProductDocument> findByPriceBetween(Double minPrice, Double maxPrice, Pageable pageable);
+    Page<ProductDocument> findByPriceBetween(BigDecimal minPrice, BigDecimal maxPrice, Pageable pageable);
 
 }

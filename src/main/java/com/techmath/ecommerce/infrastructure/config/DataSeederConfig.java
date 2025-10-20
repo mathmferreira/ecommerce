@@ -39,6 +39,7 @@ public class DataSeederConfig {
             PayOrderUseCase payOrderUseCase
     ) {
         return args -> {
+            productSearchService.ensureElasticsearchIndexExists();
             if (productRepository.count() > 0) {
                 log.info("Database already contains products. Skipping data seeding.");
                 return;
