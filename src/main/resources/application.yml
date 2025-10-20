@@ -5,7 +5,8 @@ spring:
   jpa:
     open-in-view: false
     hibernate:
-      ddl-auto: update
+      ddl-auto: validate
+    show-sql: true
 
   kafka:
     bootstrap-servers: localhost:9092
@@ -20,9 +21,14 @@ spring:
       value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
       properties:
         spring.json.trusted.packages: "*"
-        spring.json.value.default.type: com.seudominio.ecommerce.domain.events.OrderPaidEvent
+        spring.json.value.default.type: com.techmath.ecommerce.domain.events.OrderPaidEvent
       auto-offset-reset: earliest
       enable-auto-commit: false
+
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
+    locations: classpath:db/migration
 
 kafka:
   topics:

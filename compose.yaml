@@ -6,8 +6,8 @@ services:
       - 'discovery.type=single-node'
       - 'xpack.security.enabled=false'
     ports:
-      - '9200'
-      - '9300'
+      - '9200:9200'
+      - '9300:9300'
 
   mysql:
     image: 'mysql:latest'
@@ -18,3 +18,38 @@ services:
       - 'MYSQL_USER=ecommerce'
     ports:
       - '3306'
+
+  # Zookeeper service (required by Kafka for managing broker metadata)
+  zookeeper:
+    image: wurstmeister/zookeeper  # Zookeeper image from the wurstmeister repository
+    ports:
+      - "2181:2181"  # Expose Zookeeper's default port 2181 to the host machine
+    networks:
+      - my_custom_network  # Attach the Zookeeper container to the custom network
+
+  # Kafka service
+  kafka:
+    hostname: kafka
+    image: wurstmeister/kafka  # Kafka image from the wurstmeister repository
+    ports:
+      - "9092:9092"  # Expose Kafka's default port 9092 to the host machine
+    environment:
+      # Kafka listeners (Kafka listens for connections on 0.0.0.0, making it accessible from within Docker)
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092
+      # Advertised listeners (the address that Kafka will advertise to clients inside the Docker network)
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
+      # Zookeeper connection (Zookeeper is used to manage Kafka brokers, so Kafka needs to know how to connect to it)
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      # Unique broker ID (used to identify this Kafka broker, especially in multi-broker setups)
+      KAFKA_BROKER_ID: 1
+    depends_on:
+      - zookeeper  # Ensure Kafka starts only after Zookeeper is up and running
+    networks:
+      - my_custom_network  # Attach the Kafka container to the custom network
+
+
+
+# Custom network configuration
+networks:
+    my_custom_network:
+      driver: bridge

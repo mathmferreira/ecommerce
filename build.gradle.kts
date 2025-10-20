@@ -38,6 +38,9 @@ dependencies {
     developmentOnly("org.springframework.boot:spring-boot-devtools")
     developmentOnly("org.springframework.boot:spring-boot-docker-compose")
 
+    implementation("org.flywaydb:flyway-core")
+    implementation("org.flywaydb:flyway-mysql")
+
     runtimeOnly("com.mysql:mysql-connector-j")
 
     compileOnly("org.projectlombok:lombok")
